@@ -450,7 +450,10 @@ NetworkInterface::flitisizeMessage(MsgPtr msg_ptr, int vnet)
         }
 
         m_ni_out_vcs_enqueue_time[vc] = curTick();
-        outVcState[vc].setState(ACTIVE_, curTick());
+        const bool singleFlit = (num_flits == 1);  // HEAD_TAIL_
+        if (!singleFlit) {
+            outVcState[vc].setState(ACTIVE_, curTick());
+        }
     }
     return true ;
 }

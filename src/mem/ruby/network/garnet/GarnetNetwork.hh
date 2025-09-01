@@ -80,6 +80,7 @@ class GarnetNetwork : public Network
     uint32_t getBuffersPerDataVC() { return m_buffers_per_data_vc; }
     uint32_t getBuffersPerCtrlVC() { return m_buffers_per_ctrl_vc; }
     int getRoutingAlgorithm() const { return m_routing_algorithm; }
+    bool getEnableWormhole() const {return m_enable_wormhole;}
 
     bool isFaultModelEnabled() const { return m_enable_fault_model; }
     FaultModel* fault_model;
@@ -113,7 +114,7 @@ class GarnetNetwork : public Network
 
     // Stats
     void collateStats();
-    void regStats();
+    void regStats() override;
     void resetStats();
     void print(std::ostream& out) const;
 
@@ -200,6 +201,9 @@ class GarnetNetwork : public Network
     statistics::Scalar  m_total_hops;
     statistics::Formula m_avg_hops;
 
+    statistics::Scalar m_sim_cycles;
+    statistics::Formula m_reception_rate;
+
     std::vector<std::vector<statistics::Scalar *>> m_data_traffic_distribution;
     std::vector<std::vector<statistics::Scalar *>> m_ctrl_traffic_distribution;
 
@@ -214,6 +218,7 @@ class GarnetNetwork : public Network
     std::vector<CreditLink *> m_creditlinks; // All credit links in the network
     std::vector<NetworkInterface *> m_nis;   // All NI's in Network
     int m_next_packet_id; // static vairable for packet id allocation
+    bool m_enable_wormhole; //Whether the wormhole flow control is applied
 };
 
 inline std::ostream&

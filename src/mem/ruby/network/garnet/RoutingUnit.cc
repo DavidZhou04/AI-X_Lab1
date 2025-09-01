@@ -191,7 +191,7 @@ RoutingUnit::outportCompute(RouteInfo route, int inport,
         case XY_:     outport =
             outportComputeXY(route, inport, inport_dirn); break;
         // any custom algorithm
-        case CUSTOM_: outport =
+        case RING_: outport =
             outportComputeCustom(route, inport, inport_dirn); break;
         default: outport =
             lookupRoutingTable(route.vnet, route.net_dest); break;
@@ -267,7 +267,31 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    panic("%s placeholder executed", __FUNCTION__);
+    PortDirection outport_dirn = "Unknown";
+
+    int my_id = m_router -> get_id();
+    int dest_id = route.dest_router;
+    int num_routers = m_router->get_net_ptr()->getNumRouters();
+    //std::cout<<"my_id = "<<my_id<<" dest_id = "<<dest_id<<" ";
+    int relative_move = (dest_id - my_id + num_routers) % num_routers;
+    bool dirn = (relative_move <= num_routers/2);
+    //Signals going in increasing or decreasing order;
+    //1 for increasing and 0 for decreasing
+    int hops = 0; //Count the hops
+
+    if (dirn) hops = relative_move;
+    else hops = num_routers - relative_move;
+
+    assert(hops != 0);
+    if (dirn) {
+        assert(inport_dirn == "Local" || inport_dirn == "West");
+        outport_dirn = "East";
+    } else {
+        assert(inport_dirn == "Local" || inport_dirn == "East");
+        outport_dirn = "West";
+    }
+    //panic("hops == 0", hops == 0);
+    return m_outports_dirn2idx[outport_dirn];
 }
 
 } // namespace garnet
