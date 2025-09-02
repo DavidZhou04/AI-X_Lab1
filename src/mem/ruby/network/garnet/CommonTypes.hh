@@ -55,6 +55,7 @@ enum RoutingAlgorithm
     TABLE_ = 0,
     XY_ = 1,
     RING_ = 2,
+    TORUS_ = 3,
     NUM_ROUTING_ALGORITHM_
 };
 

@@ -191,8 +191,10 @@ RoutingUnit::outportCompute(RouteInfo route, int inport,
         case XY_:     outport =
             outportComputeXY(route, inport, inport_dirn); break;
         // any custom algorithm
-        case RING_: outport =
+        case RING_:   outport =
             outportComputeCustom(route, inport, inport_dirn); break;
+        case TORUS_:  outport=
+            outportComputeTorus(route, inport, inport_dirn); break;
         default: outport =
             lookupRoutingTable(route.vnet, route.net_dest); break;
     }
@@ -292,6 +294,16 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
     }
     //panic("hops == 0", hops == 0);
     return m_outports_dirn2idx[outport_dirn];
+}
+
+int
+RoutingUnit::outportComputeCustom(RouteInfo route,
+                                 int inport,
+                                 PortDirection inport_dirn)
+{
+   //TODO: Finish the routing algorithm
+   //Ideally it should be copy-pasting and modifying
+   //Refer to Mesh_XY and Ring topology
 }
 
 } // namespace garnet
