@@ -93,14 +93,18 @@ InputUnit::wakeup()
             assert(virtualChannels[vc].get_state() == IDLE_);
             set_vc_active(vc, curTick());
 
-            // Route computation for this vc
-            int outport = m_router->route_compute(t_flit->get_route(),
-                m_id, m_direction);
-
-            // Update output port in VC
-            // All flits in this packet will use this output port
-            // The output port field in the flit is updated after it wins SA
-            grant_outport(vc, outport);
+            int vnet = vc / m_vc_per_vnet;
+            int vc_index = vc % m_vc_per_vnet;
+            auto route = t_flit->get_route();
+            
+            if (vc_index == 0) {
+                // Escape VC: deterministic DOR
+                outport = m_router->route_compute_dor(route, m_id, m_direction);
+            } else {
+                // Adaptive VC
+                outport = m_router->route_compute_adaptive(route, m_id, m_direction);
+            }
+            grant_outport(vc, outport);            
 
         } else {
             assert(virtualChannels[vc].get_state() == ACTIVE_);

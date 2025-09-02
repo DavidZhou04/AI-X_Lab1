@@ -7,12 +7,12 @@ from topologies.BaseTopology import SimpleTopology
 
 # Creates a generic Mesh assuming an equal number of cache
 # and directory controllers.
-# XY routing is enforced (using link weights)
+# Torus routing is enforced (using link weights)
 # to guarantee deadlock freedom.
 
 
-class Mesh_XY(SimpleTopology):
-    description = "Mesh_XY"
+class Mesh_Torus(SimpleTopology):
+    description = "Mesh_Torus"
 
     def __init__(self, controllers):
         self.nodes = controllers

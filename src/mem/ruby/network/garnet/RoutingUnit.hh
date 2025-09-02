@@ -48,6 +48,7 @@ namespace garnet
 
 class InputUnit;
 class Router;
+struct Coord { int x; int y; int z; };
 
 class RoutingUnit
 {
@@ -87,6 +88,15 @@ class RoutingUnit
     // of vnets or if the vector supports all vnets.
     bool supportsVnet(int vnet, std::vector<int> sVnets);
 
+    int m_dimX, m_dimY, m_dimZ;
+    Coord idToCoord(int id) const {
+        int x = id % m_dimX;
+        int y = (id / m_dimX) % m_dimY;
+        int z = id / (m_dimX * m_dimY);
+        return Coord{x,y,z};
+    }
+
+    int getBufferLoad(int port) const;
 
   private:
     Router *m_router;

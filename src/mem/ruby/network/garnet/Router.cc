@@ -164,6 +164,18 @@ Router::route_compute(RouteInfo route, int inport, PortDirection inport_dirn)
     return routingUnit.outportCompute(route, inport, inport_dirn);
 }
 
+int
+Router::route_compute_dor(RouteInfo route, int inport, PortDirection inport_dirn)
+{
+    return routingUnit.outportComputeXY(route, inport, inport_dirn);
+}
+
+int
+Router::route_compute_adaptive(RouteInfo route, int inport, PortDirection inport_dirn)
+{
+    return routingUnit.outportComputeTorus(route, inport, inport_dirn);
+}
+
 void
 Router::grant_switch(int inport, flit *t_flit)
 {

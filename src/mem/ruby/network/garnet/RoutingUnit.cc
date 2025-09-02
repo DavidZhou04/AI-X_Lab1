@@ -297,14 +297,79 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
 }
 
 int
-RoutingUnit::outportComputeCustom(RouteInfo route,
+RoutingUnit::outportComputeTorus(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-   //TODO: Finish the routing algorithm
-   //Ideally it should be copy-pasting and modifying
-   //Refer to Mesh_XY and Ring topology
+    // 当前节点、目标节点
+    Coord cur = idToCoord(m_router->get_id());
+    Coord dst = idToCoord(route.dest_router);
+
+    std::vector<int> candidate_ports;
+
+    // X维度
+    if (cur.x != dst.x) {
+        int dx = (dst.x - cur.x + dimX) % dimX; // wrap-around
+        if (dx < dimX/2)
+            candidate_ports.push_back(m_outports_dirn2idx[East]);
+        else
+            candidate_ports.push_back(m_outports_dirn2idx[West]);
+    }
+    // Y维度
+    if (cur.y != dst.y) {
+        int dy = (dst.y - cur.y + dimY) % dimY;
+        if (dy <= dimY/2)
+            candidate_ports.push_back(m_outports_dirn2idx[North]);
+        else
+            candidate_ports.push_back(m_outports_dirn2idx[South]);
+    }
+    // Z维度
+    if (cur.z != dst.z) {
+        int dz = (dst.z - cur.z + dimZ) % dimZ;
+        if (dz <= dimZ/2)
+            candidate_ports.push_back(m_outports_dirn2idx[Up]);
+        else
+            candidate_ports.push_back(m_outports_dirn2idx[Down]);
+    }
+
+    // Adaptive 选择：找 buffer 最空的 port
+    int best_port = candidate_ports[0];
+    int min_load = getBufferLoad(best_port);
+    for (auto p : candidate_ports) {
+        if (getBufferLoad(p) < min_load) {
+            best_port = p;
+            min_load = getBufferLoad(p);
+        }
+    }
+
+    return best_port;
 }
+
+int
+RoutingUnit::getBufferLoad(int port)
+{
+    // 1. 找到对应的出链路
+    GarnetNetworkLink* out_link = m_router->getOutLink(port);
+    assert(out_link != nullptr);
+
+    // 2. 找到这条链路的下游 InputUnit
+    Consumer* consumer = out_link->getLinkConsumer();
+    InputUnit* input_unit = dynamic_cast<InputUnit*>(consumer);
+    if (input_unit == nullptr) {
+        // 下游不是 router input（可能是 NetworkInterface）
+        return 0;
+    }
+
+    // 3. 遍历下游 input unit 的所有 VC，统计占用
+    int total_load = 0;
+    int num_vcs = input_unit->get_vc_per_vnet();
+    for (int vc = 0; vc < num_vcs; vc++) {
+        total_load += input_unit->get_buf_read_activity(vc);
+    }
+
+    return total_load;
+}
+
 
 } // namespace garnet
 } // namespace ruby

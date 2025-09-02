@@ -110,14 +110,21 @@ OutputUnit::has_free_vc(int vnet)
 int
 OutputUnit::select_free_vc(int vnet)
 {
-    int vc_base = vnet*m_vc_per_vnet;
-    for (int vc = vc_base; vc < vc_base + m_vc_per_vnet; vc++) {
+    int vc_base = vnet * m_vc_per_vnet;
+
+    // 先尝试 adaptive VC (1,2,...)
+    for (int vc = vc_base + 1; vc < vc_base + m_vc_per_vnet; vc++) {
         if (is_vc_idle(vc, curTick())) {
             outVcState[vc].setState(ACTIVE_, curTick());
             return vc;
         }
     }
-
+    
+    // fallback 到 escape VC (index 0)
+    if (is_vc_idle(vc_base, curTick())) {
+        outVcState[vc_base].setState(ACTIVE_, curTick());
+        return vc_base;
+    }
     return -1;
 }
 
