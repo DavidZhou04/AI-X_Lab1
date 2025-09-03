@@ -195,6 +195,8 @@ RoutingUnit::outportCompute(RouteInfo route, int inport,
             outportComputeCustom(route, inport, inport_dirn); break;
         case TORUS_:  outport=
             outportComputeTorus(route, inport, inport_dirn); break;
+        case TORUS_DOR_:outport=
+            outportComputeTorusDor(route, inport, inport_dirn); break;
         default: outport =
             lookupRoutingTable(route.vnet, route.net_dest); break;
     }
@@ -379,6 +381,69 @@ RoutingUnit::getBufferLoad(int port)
     return total_load;
 }
 
+int
+RoutingUnit::outportComputeTorusDor(RouteInfo route,
+                                 int inport,
+                                 PortDirection inport_dirn)
+{
+    PortDirection outport_dirn = "Unknown";
+
+    int dimX = m_router->get_net_ptr()->getNumRows();
+    int dimY = m_router->get_net_ptr()->getNumCols();
+    int dimZ = m_router->get_net_ptr()->getDepth();
+
+    assert(dimX>0 && dimY>0 &&dimZ>0);
+
+    int my_id = m_router->get_id();
+    int my_z = my_id / (dimX * dimY);
+    int my_y = (my_id % (dimX * dimY)) % dimY;
+    int my_x = (my_id % (dimX * dimY)) / dimY;
+
+    int dest_id = route.dest_router;
+    int dest_z = dest_id / (dimX * dimY);
+    int dest_y = (dest_id % (dimX * dimY)) % dimY;
+    int dest_x = (dest_id % (dimX * dimY)) / dimY;
+
+    int x_hops = (dest_x - my_x) % dimX;
+    bool x_dirn = bool(x_hops <= dimX/2);
+
+    int y_hops = (dest_y - my_y) % dimY;
+    bool y_dirn = bool(y_hops <= dimY/2);
+
+    int z_hops = (dest_z - my_z) % dimZ;
+    bool z_dirn = bool(z_hops <= dimZ/2);
+
+    if (x_hops > 0) {
+        if (x_dirn) {
+            outport_dirn = "East";
+        } else {
+            outport_dirn = "West";
+        }
+    } else if (y_hops > 0) {
+        if (y_dirn) {
+            outport_dirn = "North";
+        } else {
+            outport_dirn = "South";
+        }
+    }
+        else if (z_hops > 0){
+            if (y_dirn) {
+            outport_dirn = "Up";
+            } else {
+            outport_dirn = "Down";
+            }
+        }
+    else {
+        // x_hops == 0 and y_hops == 0
+        // this is not possible
+        // already checked that in outportCompute() function
+        printf("coordinate = %d,%d,%d",x_hops,y_hops,z_hops);
+        panic("x_hops == y_hops == z_hops == 0");
+    }
+    return m_outports_dirn2idx[outport_dirn];
+
+    return 0;
+}
 
 } // namespace garnet
 } // namespace ruby
