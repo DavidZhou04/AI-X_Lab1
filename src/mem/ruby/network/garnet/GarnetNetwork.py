@@ -42,7 +42,7 @@ class GarnetNetwork(RubyNetwork):
     wormhole = Param.Bool(False, "Enable wormhole flow control")
 
     num_rows = Param.Int(0, "number of rows if 2D (mesh/torus/..) topology")
-    mesh_depth = Param.Int(0, "depth of 3D torus network")
+    m_depth = Param.Int(0, "depth of 3D torus network")
     ni_flit_size = Param.UInt32(16, "network interface flit size in bytes")
     vcs_per_vnet = Param.UInt32(4, "virtual channels per virtual network")
 

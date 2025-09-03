@@ -305,6 +305,11 @@ RoutingUnit::outportComputeTorus(RouteInfo route,
     Coord cur = idToCoord(m_router->get_id());
     Coord dst = idToCoord(route.dest_router);
 
+    int dimX = m_router->get_net_ptr()->getNumRows();
+    int dimY = m_router->get_net_ptr()->getNumCols();
+    int dimZ = m_router->get_net_ptr()->getDepth();
+    assert(dimX > 0 && dimY > 0 && dimZ > 0);
+
     std::vector<int> candidate_ports;
 
     // X维度

@@ -24,8 +24,8 @@ class Mesh_Torus(SimpleTopology):
         nodes = self.nodes
 
         num_routers = options.num_cpus
-        num_rows = options.mesh_rows
-        mesh_depth = options.mesh_depth
+        dimX = options.mesh_rows
+        dimZ = options.m_depth
 
         # default values for link latency and router latency.
         # Can be over-ridden on a per link/router basis
@@ -35,10 +35,10 @@ class Mesh_Torus(SimpleTopology):
         # There must be an evenly divisible number of cntrls to routers
         # Also, obviously the number or rows must be <= the number of routers
         cntrls_per_router, remainder = divmod(len(nodes), num_routers)
-        assert num_rows > 0 and num_rows <= num_routers
-        assert mesh_depth > 0 and mesh_depth <= num_routers
-        num_columns = int(num_routers / num_rows / mesh_depth)
-        assert num_columns * num_rows * mesh_depth == num_routers
+        assert dimX > 0 and dimX <= num_routers
+        assert dimZ > 0 and dimZ <= num_routers
+        dimY = int(num_routers / dimX / dimZ)
+        assert dimY * dimX * dimZ == num_routers
 
         # Create the routers in the mesh
         routers = [
@@ -98,157 +98,121 @@ class Mesh_Torus(SimpleTopology):
         # TODO:internal links in 3D torus
         # For rows, columns and width, we use x,y,z to represent the direction
         # The coordinate (row,col,depth) represents the location of
-        # index = depth*num_rows*num_columns + row*num_columns + col
-        for row in range(num_rows):
-            for col in range(num_columns):
-                for depth in range(mesh_depth):
-                    zdec_out = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        # index = depth*dimX*dimY + row*dimY + col
+        for row in range(dimX):
+            for col in range(dimY):
+                for depth in range(dimZ):
+                    zdec_out = depth * dimX * dimY + row * dimY + col
                     zinc_in = (
-                        ((depth + 1) % mesh_depth) * num_rows * num_columns
-                        + row * num_columns
-                        + col
+                        ((depth + 1) % dimZ) * dimX * dimY + row * dimY + col
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[zdec_out],
                             dst_node=routers[zinc_in],
-                            src_outport="zDec",
-                            dst_inport="zInc",
+                            src_outport="Up",
+                            dst_inport="Down",
                             latency=link_latency,
                             weight=1,
                         )
                     )
                     link_count += 1
 
-        for row in range(num_rows):
-            for col in range(num_columns):
-                for depth in range(mesh_depth):
-                    zdec_in = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        for row in range(dimX):
+            for col in range(dimY):
+                for depth in range(dimZ):
+                    zdec_in = depth * dimX * dimY + row * dimY + col
                     zinc_out = (
-                        ((depth + 1) % mesh_depth) * num_rows * num_columns
-                        + row * num_columns
-                        + col
+                        ((depth + 1) % dimZ) * dimX * dimY + row * dimY + col
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[zinc_out],
                             dst_node=routers[zdec_in],
-                            src_outport="zInc",
-                            dst_inport="zDec",
+                            src_outport="Down",
+                            dst_inport="Up",
                             latency=link_latency,
                             weight=1,
                         )
                     )
                     link_count += 1
 
-        for row in range(num_rows):
-            for depth in range(mesh_depth):
-                for col in range(num_columns):
-                    ydec_out = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        for row in range(dimX):
+            for depth in range(dimZ):
+                for col in range(dimY):
+                    ydec_out = depth * dimX * dimY + row * dimY + col
                     yinc_in = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + ((col + 1) % num_columns)
+                        depth * dimX * dimY + row * dimY + ((col + 1) % dimY)
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[ydec_out],
                             dst_node=routers[yinc_in],
-                            src_outport="yDec",
-                            dst_inport="yInc",
+                            src_outport="North",
+                            dst_inport="South",
                             latency=link_latency,
                             weight=1,
                         )
                     )
                     link_count += 1
 
-        for row in range(num_rows):
-            for depth in range(mesh_depth):
-                for col in range(num_columns):
-                    ydec_in = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        for row in range(dimX):
+            for depth in range(dimZ):
+                for col in range(dimY):
+                    ydec_in = depth * dimX * dimY + row * dimY + col
                     yinc_out = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + ((col + 1) % num_columns)
+                        depth * dimX * dimY + row * dimY + ((col + 1) % dimY)
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[yinc_out],
                             dst_node=routers[ydec_in],
-                            src_outport="yInc",
-                            dst_inport="yDec",
+                            src_outport="South",
+                            dst_inport="North",
                             latency=link_latency,
                             weight=1,
                         )
                     )
                     link_count += 1
 
-        for col in range(num_columns):
-            for depth in range(mesh_depth):
-                for row in range(num_rows):
-                    xdec_out = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        for col in range(dimY):
+            for depth in range(dimZ):
+                for row in range(dimX):
+                    xdec_out = depth * dimX * dimY + row * dimY + col
                     xinc_in = (
-                        depth * num_rows * num_columns
-                        + ((row + 1) % num_rows) * num_columns
-                        + col
+                        depth * dimX * dimY + ((row + 1) % dimX) * dimY + col
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[xdec_out],
                             dst_node=routers[xinc_in],
-                            src_outport="xDec",
-                            dst_inport="xInc",
+                            src_outport="East",
+                            dst_inport="West",
                             latency=link_latency,
                             weight=1,
                         )
                     )
                     link_count += 1
 
-        for col in range(num_columns):
-            for depth in range(mesh_depth):
-                for row in range(num_rows):
-                    xdec_in = (
-                        depth * num_rows * num_columns
-                        + row * num_columns
-                        + col
-                    )
+        for col in range(dimY):
+            for depth in range(dimZ):
+                for row in range(dimX):
+                    xdec_in = depth * dimX * dimY + row * dimY + col
                     xinc_out = (
-                        depth * num_rows * num_columns
-                        + ((row + 1) % num_rows) * num_columns
-                        + col
+                        depth * dimX * dimY + ((row + 1) % dimX) * dimY + col
                     )
                     int_links.append(
                         IntLink(
                             link_id=link_count,
                             src_node=routers[xinc_out],
                             dst_node=routers[xdec_in],
-                            src_outport="xInc",
-                            dst_inport="xDec",
+                            src_outport="West",
+                            dst_inport="East",
                             latency=link_latency,
                             weight=1,
                         )

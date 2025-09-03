@@ -66,6 +66,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     : Network(p),m_enable_wormhole(p.wormhole)
 {
     m_num_rows = p.num_rows;
+    m_depth = p.mesh_depth;
     m_ni_flit_size = p.ni_flit_size;
     m_max_vcs_per_vnet = 0;
     m_buffers_per_data_vc = p.buffers_per_data_vc;

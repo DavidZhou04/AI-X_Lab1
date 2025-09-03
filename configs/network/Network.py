@@ -176,7 +176,7 @@ def create_network(options, ruby):
 def init_network(options, network, InterfaceClass):
 
     if options.network == "garnet":
-        network.mesh_depth = options.mesh_depth
+        network.m_depth = options.mesh_depth
         network.num_rows = options.mesh_rows
         network.vcs_per_vnet = options.vcs_per_vnet
         network.ni_flit_size = options.link_width_bits / 8
