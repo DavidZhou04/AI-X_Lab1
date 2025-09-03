@@ -301,6 +301,10 @@ RoutingUnit::outportComputeTorus(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
+    // See Torus_Escape.py, this is the torus topology with escape
+    // Torus.py is the one without escape.
+    // This is preserved as XYZ ordering on normal torus
+    // can serve as a baseline as deterministic routing algorithm
     // 当前节点、目标节点
     Coord cur = idToCoord(m_router->get_id());
     Coord dst = idToCoord(route.dest_router);
