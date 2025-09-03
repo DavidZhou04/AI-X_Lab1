@@ -66,7 +66,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     : Network(p),m_enable_wormhole(p.wormhole)
 {
     m_num_rows = p.num_rows;
-    m_depth = p.mesh_depth;
+    m_depth = p.m_depth;
     m_ni_flit_size = p.ni_flit_size;
     m_max_vcs_per_vnet = 0;
     m_buffers_per_data_vc = p.buffers_per_data_vc;
@@ -180,7 +180,7 @@ GarnetNetwork::makeExtInLink(NodeID global_src, SwitchID dest, BasicLink* link,
     m_networklinks.push_back(net_link);
     m_creditlinks.push_back(credit_link);
 
-    PortDirection dst_inport_dirn = "Local";
+    PortDirection dst_inport_dirn = PortDirection::Local;
 
     m_max_vcs_per_vnet = std::max(m_max_vcs_per_vnet,
                              m_routers[dest]->get_vc_per_vnet());
@@ -253,7 +253,7 @@ GarnetNetwork::makeExtOutLink(SwitchID src, NodeID global_dest,
     m_networklinks.push_back(net_link);
     m_creditlinks.push_back(credit_link);
 
-    PortDirection src_outport_dirn = "Local";
+    PortDirection src_outport_dirn = PortDirection::Local;
 
     m_max_vcs_per_vnet = std::max(m_max_vcs_per_vnet,
                              m_routers[src]->get_vc_per_vnet());

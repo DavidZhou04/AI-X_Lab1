@@ -95,6 +95,7 @@ InputUnit::wakeup()
 
             int vnet = vc / m_vc_per_vnet;
             int vc_index = vc % m_vc_per_vnet;
+            int outport = -1;
             auto route = t_flit->get_route();
             
             if (vc_index == 0) {

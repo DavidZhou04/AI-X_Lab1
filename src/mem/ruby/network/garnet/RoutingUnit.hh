@@ -36,6 +36,7 @@
 #include "mem/ruby/network/garnet/CommonTypes.hh"
 #include "mem/ruby/network/garnet/GarnetNetwork.hh"
 #include "mem/ruby/network/garnet/flit.hh"
+#include "mem/ruby/network/garnet/PortDirection.hh"
 
 namespace gem5
 {
@@ -96,7 +97,7 @@ class RoutingUnit
         return Coord{x,y,z};
     }
 
-    int getBufferLoad(int port) const;
+    int getBufferLoad(int port);
 
   private:
     Router *m_router;

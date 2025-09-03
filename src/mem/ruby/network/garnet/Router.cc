@@ -196,7 +196,17 @@ Router::getPortDirectionName(PortDirection direction)
     // If not, then this function should add a switch
     // statement to convert direction to a string
     // that can be printed out
-    return direction;
+    switch (direction) {
+        case PortDirection::Local: return "Local";
+        case PortDirection::East: return "East";
+        case PortDirection::West: return "West";
+        case PortDirection::North: return "North";
+        case PortDirection::South: return "South";
+        case PortDirection::Up: return "Up";
+        case PortDirection::Down: return "Down";
+        case PortDirection::Unknown: return "Unknown";
+    }
+    return "Unknown";
 }
 
 void

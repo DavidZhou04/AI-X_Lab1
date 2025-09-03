@@ -46,6 +46,7 @@
 #include "mem/ruby/network/garnet/SwitchAllocator.hh"
 #include "mem/ruby/network/garnet/flit.hh"
 #include "params/GarnetRouter.hh"
+#include "mem/ruby/network/garnet/PortDirection.hh"
 
 namespace gem5
 {

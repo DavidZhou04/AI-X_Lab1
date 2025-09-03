@@ -29,6 +29,7 @@
 
 
 #include "mem/ruby/network/garnet/RoutingUnit.hh"
+#include "mem/ruby/network/garnet/PortDirection.hh"
 
 #include "base/cast.hh"
 #include "base/compiler.hh"
@@ -146,17 +147,17 @@ RoutingUnit::lookupRoutingTable(int vnet, NetDest msg_destination)
 
 
 void
-RoutingUnit::addInDirection(PortDirection inport_dirn, int inport_idx)
+RoutingUnit::addInDirection(PortDirection inport_dirn, int inport)
 {
-    m_inports_dirn2idx[inport_dirn] = inport_idx;
-    m_inports_idx2dirn[inport_idx]  = inport_dirn;
+    m_inports_dirn2idx[inport_dirn] = inport;
+    m_inports_idx2dirn[inport]  = inport_dirn;
 }
 
 void
-RoutingUnit::addOutDirection(PortDirection outport_dirn, int outport_idx)
+RoutingUnit::addOutDirection(PortDirection outport_dirn, int outport)
 {
-    m_outports_dirn2idx[outport_dirn] = outport_idx;
-    m_outports_idx2dirn[outport_idx]  = outport_dirn;
+    m_outports_dirn2idx[outport_dirn] = outport;
+    m_outports_idx2dirn[outport]  = outport_dirn;
 }
 
 // outportCompute() is called by the InputUnit
@@ -211,7 +212,7 @@ RoutingUnit::outportComputeXY(RouteInfo route,
                               int inport,
                               PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = "Unknown";
+    PortDirection outport_dirn = PortDirection::Unknown;
 
     [[maybe_unused]] int num_rows = m_router->get_net_ptr()->getNumRows();
     int num_cols = m_router->get_net_ptr()->getNumCols();
@@ -236,21 +237,21 @@ RoutingUnit::outportComputeXY(RouteInfo route,
 
     if (x_hops > 0) {
         if (x_dirn) {
-            assert(inport_dirn == "Local" || inport_dirn == "West");
-            outport_dirn = "East";
+            assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::West);
+            outport_dirn = PortDirection::East;
         } else {
-            assert(inport_dirn == "Local" || inport_dirn == "East");
-            outport_dirn = "West";
+            assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::East);
+            outport_dirn = PortDirection::West;
         }
     } else if (y_hops > 0) {
         if (y_dirn) {
             // "Local" or "South" or "West" or "East"
-            assert(inport_dirn != "North");
-            outport_dirn = "North";
+            assert(inport_dirn != PortDirection::North);
+            outport_dirn = PortDirection::North;
         } else {
             // "Local" or "North" or "West" or "East"
-            assert(inport_dirn != "South");
-            outport_dirn = "South";
+            assert(inport_dirn != PortDirection::South);
+            outport_dirn = PortDirection::South;
         }
     } else {
         // x_hops == 0 and y_hops == 0
@@ -269,7 +270,7 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = "Unknown";
+    PortDirection outport_dirn = PortDirection::Unknown;
 
     int my_id = m_router -> get_id();
     int dest_id = route.dest_router;
@@ -286,11 +287,11 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
 
     assert(hops != 0);
     if (dirn) {
-        assert(inport_dirn == "Local" || inport_dirn == "West");
-        outport_dirn = "East";
+        assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::West);
+        outport_dirn = PortDirection::East;
     } else {
-        assert(inport_dirn == "Local" || inport_dirn == "East");
-        outport_dirn = "West";
+        assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::East);
+        outport_dirn = PortDirection::West;
     }
     //panic("hops == 0", hops == 0);
     return m_outports_dirn2idx[outport_dirn];
@@ -320,25 +321,25 @@ RoutingUnit::outportComputeTorus(RouteInfo route,
     if (cur.x != dst.x) {
         int dx = (dst.x - cur.x + dimX) % dimX; // wrap-around
         if (dx < dimX/2)
-            candidate_ports.push_back(m_outports_dirn2idx[East]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::East]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[West]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::West]);
     }
     // Y维度
     if (cur.y != dst.y) {
         int dy = (dst.y - cur.y + dimY) % dimY;
         if (dy <= dimY/2)
-            candidate_ports.push_back(m_outports_dirn2idx[North]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::North]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[South]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::South]);
     }
     // Z维度
     if (cur.z != dst.z) {
         int dz = (dst.z - cur.z + dimZ) % dimZ;
         if (dz <= dimZ/2)
-            candidate_ports.push_back(m_outports_dirn2idx[Up]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::Up]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[Down]);
+            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::Down]);
     }
 
     // Adaptive 选择：找 buffer 最空的 port
@@ -358,7 +359,7 @@ int
 RoutingUnit::getBufferLoad(int port)
 {
     // 1. 找到对应的出链路
-    GarnetNetworkLink* out_link = m_router->getOutLink(port);
+    GarnetNetworkLink* out_link = m_router->getOutputUnit(port)->get_out_link();
     assert(out_link != nullptr);
 
     // 2. 找到这条链路的下游 InputUnit

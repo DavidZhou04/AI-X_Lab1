@@ -157,6 +157,8 @@ class InputUnit : public Consumer
 
     void resetStats();
 
+    int get_vc_per_vnet() { return m_vc_per_vnet; }
+
   private:
     Router *m_router;
     int m_id;
