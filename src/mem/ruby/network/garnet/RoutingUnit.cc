@@ -387,7 +387,7 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = "Unknown";
+    PortDirection outport_dirn = PortDirection::Unknown;
 
     int dimX = m_router->get_net_ptr()->getNumRows();
     int dimY = m_router->get_net_ptr()->getNumCols();
@@ -416,22 +416,22 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
 
     if (x_hops > 0) {
         if (x_dirn) {
-            outport_dirn = "East";
+            outport_dirn = PortDirection::East;
         } else {
-            outport_dirn = "West";
+            outport_dirn = PortDirection::West;
         }
     } else if (y_hops > 0) {
         if (y_dirn) {
-            outport_dirn = "North";
+            outport_dirn = PortDirection::North;
         } else {
-            outport_dirn = "South";
+            outport_dirn = PortDirection::South;
         }
     }
         else if (z_hops > 0){
             if (y_dirn) {
-            outport_dirn = "Up";
+            outport_dirn = PortDirection::Up;
             } else {
-            outport_dirn = "Down";
+            outport_dirn = PortDirection::Down;
             }
         }
     else {
