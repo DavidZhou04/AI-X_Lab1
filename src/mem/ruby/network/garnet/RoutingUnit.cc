@@ -398,6 +398,7 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
     int dimY = m_router->get_net_ptr()->getNumCols();
     int dimZ = m_router->get_net_ptr()->getDepth();
 
+    printf("(dimX,dimY,dimZ=%d,%d,%d)\n",dimX,dimY,dimZ);
     assert(dimX>0 && dimY>0 &&dimZ>0);
 
     int my_id = m_router->get_id();
@@ -409,6 +410,8 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
     int dest_z = dest_id / (dimX * dimY);
     int dest_y = (dest_id % (dimX * dimY)) % dimY;
     int dest_x = (dest_id % (dimX * dimY)) / dimY;
+
+    std::cout<<"my_id = "<<my_id<<" dest_id = "<<dest_id<<" ";
 
     int x_hops = (dest_x - my_x + dimX) % dimX;
     bool x_dirn = bool(x_hops <= dimX/2);
@@ -447,8 +450,6 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
         panic("x_hops == y_hops == z_hops == 0");
     }
     return m_outports_dirn2idx[outport_dirn];
-
-    return 0;
 }
 
 } // namespace garnet

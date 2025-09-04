@@ -11,7 +11,7 @@ from topologies.BaseTopology import SimpleTopology
 # to guarantee deadlock freedom.
 
 
-class Mesh_Torus_Escape(SimpleTopology):
+class Torus_Escape(SimpleTopology):
     # This is the topology for torus with escape
     description = "Mesh_Torus"
 
@@ -26,7 +26,7 @@ class Mesh_Torus_Escape(SimpleTopology):
 
         num_routers = options.num_cpus
         dimX = options.mesh_rows
-        dimZ = options.m_depth
+        dimZ = options.mesh_depth
 
         # default values for link latency and router latency.
         # Can be over-ridden on a per link/router basis

@@ -11,7 +11,7 @@ from topologies.BaseTopology import SimpleTopology
 # to guarantee deadlock freedom.
 
 
-class Mesh_Torus(SimpleTopology):
+class Torus(SimpleTopology):
     description = "Mesh_Torus"
 
     def __init__(self, controllers):
@@ -25,7 +25,7 @@ class Mesh_Torus(SimpleTopology):
 
         num_routers = options.num_cpus
         dimX = options.mesh_rows
-        dimZ = options.m_depth
+        dimZ = options.mesh_depth
 
         # default values for link latency and router latency.
         # Can be over-ridden on a per link/router basis
@@ -35,11 +35,12 @@ class Mesh_Torus(SimpleTopology):
         # There must be an evenly divisible number of cntrls to routers
         # Also, obviously the number or rows must be <= the number of routers
         cntrls_per_router, remainder = divmod(len(nodes), num_routers)
-        assert dimX > 0 and dimX <= num_routers
-        assert dimZ > 0 and dimZ <= num_routers
-        dimY = int(num_routers / dimX / dimZ)
-        assert dimY * dimX * dimZ == num_routers
 
+        assert dimX > 0 and dimX <= num_routers, "Error dimX"
+        assert dimZ > 0 and dimZ <= num_routers, "Error,dimZ"
+        dimY = int(num_routers / dimX / dimZ)
+        assert dimY * dimX * dimZ == num_routers, "Number of routers error"
+        print("dimX=", dimX, " dimY=", dimY, " dimZ=", dimZ, "\n")
         # Create the routers in the mesh
         routers = [
             Router(router_id=i, latency=router_latency)
@@ -220,6 +221,7 @@ class Mesh_Torus(SimpleTopology):
                     link_count += 1
 
         network.int_links = int_links
+        print("finished building torus")
 
     # Register nodes with filesystem
     def registerTopology(self, options):

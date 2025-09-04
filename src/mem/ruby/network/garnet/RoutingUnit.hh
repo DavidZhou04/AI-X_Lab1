@@ -95,9 +95,10 @@ class RoutingUnit
 
     int m_dimX, m_dimY, m_dimZ;
     Coord idToCoord(int id) const {
-        int x = id % m_dimX;
-        int y = (id / m_dimX) % m_dimY;
+        if (m_dimX * m_dimY *m_dimZ==0)return Coord{0,0,0};
         int z = id / (m_dimX * m_dimY);
+        int y = (id % (m_dimX * m_dimY)) % m_dimY;
+        int x = (id % (m_dimX * m_dimY)) / m_dimY;
         return Coord{x,y,z};
     }
 

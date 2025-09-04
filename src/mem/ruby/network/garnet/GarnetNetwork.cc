@@ -66,7 +66,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     : Network(p),m_enable_wormhole(p.wormhole)
 {
     m_num_rows = p.num_rows;
-    m_depth = p.m_depth;
+    mesh_depth = p.mesh_depth;
     m_ni_flit_size = p.ni_flit_size;
     m_max_vcs_per_vnet = 0;
     m_buffers_per_data_vc = p.buffers_per_data_vc;
@@ -74,7 +74,7 @@ GarnetNetwork::GarnetNetwork(const Params &p)
     m_routing_algorithm = p.routing_algorithm;
     m_next_packet_id = 0;
     m_enable_wormhole = p.wormhole;
-    std::cout<<m_enable_wormhole;
+    std::cout<<"wormhole_enabled=" <<m_enable_wormhole << std::endl;
 
     m_enable_fault_model = p.enable_fault_model;
     if (m_enable_fault_model)
