@@ -40,7 +40,6 @@ class Torus(SimpleTopology):
         assert dimZ > 0 and dimZ <= num_routers, "Error,dimZ"
         dimY = int(num_routers / dimX / dimZ)
         assert dimY * dimX * dimZ == num_routers, "Number of routers error"
-        print("dimX=", dimX, " dimY=", dimY, " dimZ=", dimZ, "\n")
         # Create the routers in the mesh
         routers = [
             Router(router_id=i, latency=router_latency)
@@ -221,7 +220,6 @@ class Torus(SimpleTopology):
                     link_count += 1
 
         network.int_links = int_links
-        print("finished building torus")
 
     # Register nodes with filesystem
     def registerTopology(self, options):
