@@ -156,6 +156,8 @@ class GarnetNetwork : public Network
         m_total_hops += hops;
     }
 
+    NetworkLink* get_link(int id) { return m_networklinks[id]; }
+
     void update_traffic_distribution(RouteInfo route);
     int getNextPacketID() { return m_next_packet_id++; }
 

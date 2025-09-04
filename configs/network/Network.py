@@ -50,7 +50,7 @@ def define_options(parser):
     parser.add_argument(
         "--mesh-depth",
         type=int,
-        default=1,
+        default=0,
         help="the depth of network in the 3D torus topology",
     )
     parser.add_argument(

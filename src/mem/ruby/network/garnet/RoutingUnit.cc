@@ -29,12 +29,15 @@
 
 
 #include "mem/ruby/network/garnet/RoutingUnit.hh"
-#include "mem/ruby/network/garnet/PortDirection.hh"
 
 #include "base/cast.hh"
 #include "base/compiler.hh"
 #include "debug/RubyNetwork.hh"
+#include "mem/ruby/network/garnet/GarnetNetwork.hh"
 #include "mem/ruby/network/garnet/InputUnit.hh"
+#include "mem/ruby/network/garnet/NetworkLink.hh"
+#include "mem/ruby/network/garnet/OutputUnit.hh"
+#include "mem/ruby/network/garnet/PortDirection.hh"
 #include "mem/ruby/network/garnet/Router.hh"
 #include "mem/ruby/slicc_interface/Message.hh"
 
@@ -361,11 +364,13 @@ int
 RoutingUnit::getBufferLoad(int port)
 {
     // 1. 找到对应的出链路
-    GarnetNetworkLink* out_link = m_router->getOutputUnit(port)->get_out_link();
+    int out_id = m_router->getOutputUnit(port)->get_outlink_id();
+    NetworkLink* out_link = m_router->get_net_ptr()->get_link(out_id);
     assert(out_link != nullptr);
 
     // 2. 找到这条链路的下游 InputUnit
     Consumer* consumer = out_link->getLinkConsumer();
+
     InputUnit* input_unit = dynamic_cast<InputUnit*>(consumer);
     if (input_unit == nullptr) {
         // 下游不是 router input（可能是 NetworkInterface）
@@ -405,13 +410,13 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
     int dest_y = (dest_id % (dimX * dimY)) % dimY;
     int dest_x = (dest_id % (dimX * dimY)) / dimY;
 
-    int x_hops = (dest_x - my_x) % dimX;
+    int x_hops = (dest_x - my_x + dimX) % dimX;
     bool x_dirn = bool(x_hops <= dimX/2);
 
-    int y_hops = (dest_y - my_y) % dimY;
+    int y_hops = (dest_y - my_y + dimY) % dimY;
     bool y_dirn = bool(y_hops <= dimY/2);
 
-    int z_hops = (dest_z - my_z) % dimZ;
+    int z_hops = (dest_z - my_z + dimZ) % dimZ;
     bool z_dirn = bool(z_hops <= dimZ/2);
 
     if (x_hops > 0) {
@@ -428,7 +433,7 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
         }
     }
         else if (z_hops > 0){
-            if (y_dirn) {
+            if (z_dirn) {
             outport_dirn = PortDirection::Up;
             } else {
             outport_dirn = PortDirection::Down;
