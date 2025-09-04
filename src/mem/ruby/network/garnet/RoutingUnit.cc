@@ -217,7 +217,7 @@ RoutingUnit::outportComputeXY(RouteInfo route,
                               int inport,
                               PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = PortDirection::Unknown;
+    PortDirection outport_dirn = "Unknown";
 
     [[maybe_unused]] int num_rows = m_router->get_net_ptr()->getNumRows();
     int num_cols = m_router->get_net_ptr()->getNumCols();
@@ -242,21 +242,21 @@ RoutingUnit::outportComputeXY(RouteInfo route,
 
     if (x_hops > 0) {
         if (x_dirn) {
-            assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::West);
-            outport_dirn = PortDirection::East;
+            assert(inport_dirn == "Local" || inport_dirn == "West");
+            outport_dirn = "East";
         } else {
-            assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::East);
-            outport_dirn = PortDirection::West;
+            assert(inport_dirn == "Local" || inport_dirn == "East");
+            outport_dirn = "West";
         }
     } else if (y_hops > 0) {
         if (y_dirn) {
             // "Local" or "South" or "West" or "East"
-            assert(inport_dirn != PortDirection::North);
-            outport_dirn = PortDirection::North;
+            assert(inport_dirn != "North");
+            outport_dirn = "North";
         } else {
             // "Local" or "North" or "West" or "East"
-            assert(inport_dirn != PortDirection::South);
-            outport_dirn = PortDirection::South;
+            assert(inport_dirn != "South");
+            outport_dirn = "South";
         }
     } else {
         // x_hops == 0 and y_hops == 0
@@ -275,7 +275,7 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = PortDirection::Unknown;
+    PortDirection outport_dirn = "Unknown";
 
     int my_id = m_router -> get_id();
     int dest_id = route.dest_router;
@@ -292,11 +292,11 @@ RoutingUnit::outportComputeCustom(RouteInfo route,
 
     assert(hops != 0);
     if (dirn) {
-        assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::West);
-        outport_dirn = PortDirection::East;
+        assert(inport_dirn == "Local" || inport_dirn == "West");
+        outport_dirn = "East";
     } else {
-        assert(inport_dirn == PortDirection::Local || inport_dirn == PortDirection::East);
-        outport_dirn = PortDirection::West;
+        assert(inport_dirn == "Local" || inport_dirn == "East");
+        outport_dirn = "West";
     }
     //panic("hops == 0", hops == 0);
     return m_outports_dirn2idx[outport_dirn];
@@ -326,25 +326,25 @@ RoutingUnit::outportComputeTorus(RouteInfo route,
     if (cur.x != dst.x) {
         int dx = (dst.x - cur.x + dimX) % dimX; // wrap-around
         if (dx < dimX/2)
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::East]);
+            candidate_ports.push_back(m_outports_dirn2idx["East"]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::West]);
+            candidate_ports.push_back(m_outports_dirn2idx["West"]);
     }
     // Y维度
     if (cur.y != dst.y) {
         int dy = (dst.y - cur.y + dimY) % dimY;
         if (dy <= dimY/2)
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::North]);
+            candidate_ports.push_back(m_outports_dirn2idx["North"]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::South]);
+            candidate_ports.push_back(m_outports_dirn2idx["South"]);
     }
     // Z维度
     if (cur.z != dst.z) {
         int dz = (dst.z - cur.z + dimZ) % dimZ;
         if (dz <= dimZ/2)
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::Up]);
+            candidate_ports.push_back(m_outports_dirn2idx["Up"]);
         else
-            candidate_ports.push_back(m_outports_dirn2idx[PortDirection::Down]);
+            candidate_ports.push_back(m_outports_dirn2idx["Down"]);
     }
 
     // Adaptive 选择：找 buffer 最空的 port
@@ -392,7 +392,7 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
                                  int inport,
                                  PortDirection inport_dirn)
 {
-    PortDirection outport_dirn = PortDirection::Unknown;
+    PortDirection outport_dirn = "Unknown";
 
     int dimX = m_router->get_net_ptr()->getNumRows();
     int dimY = m_router->get_net_ptr()->getNumCols();
@@ -421,22 +421,22 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
 
     if (x_hops > 0) {
         if (x_dirn) {
-            outport_dirn = PortDirection::East;
+            outport_dirn = "East";
         } else {
-            outport_dirn = PortDirection::West;
+            outport_dirn = "West";
         }
     } else if (y_hops > 0) {
         if (y_dirn) {
-            outport_dirn = PortDirection::North;
+            outport_dirn = "North";
         } else {
-            outport_dirn = PortDirection::South;
+            outport_dirn = "South";
         }
     }
         else if (z_hops > 0){
             if (z_dirn) {
-            outport_dirn = PortDirection::Up;
+            outport_dirn = "Up";
             } else {
-            outport_dirn = PortDirection::Down;
+            outport_dirn = "Down";
             }
         }
     else {

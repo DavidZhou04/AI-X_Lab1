@@ -180,7 +180,7 @@ GarnetNetwork::makeExtInLink(NodeID global_src, SwitchID dest, BasicLink* link,
     m_networklinks.push_back(net_link);
     m_creditlinks.push_back(credit_link);
 
-    PortDirection dst_inport_dirn = PortDirection::Local;
+    PortDirection dst_inport_dirn = "Local";
 
     m_max_vcs_per_vnet = std::max(m_max_vcs_per_vnet,
                              m_routers[dest]->get_vc_per_vnet());
@@ -253,7 +253,7 @@ GarnetNetwork::makeExtOutLink(SwitchID src, NodeID global_dest,
     m_networklinks.push_back(net_link);
     m_creditlinks.push_back(credit_link);
 
-    PortDirection src_outport_dirn = PortDirection::Local;
+    PortDirection src_outport_dirn = "Local";
 
     m_max_vcs_per_vnet = std::max(m_max_vcs_per_vnet,
                              m_routers[src]->get_vc_per_vnet());

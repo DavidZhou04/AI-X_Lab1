@@ -10,7 +10,9 @@ namespace garnet
 {
 
 // 定义路由端口方向枚举
-enum class PortDirection {
+/*
+enum class PortDirection
+{
     Local = 0,   // NI 接口
     East,
     West,
@@ -20,6 +22,7 @@ enum class PortDirection {
     Down,
     Unknown
 };
+*/
 
 } // namespace garnet
 } // namespace ruby
