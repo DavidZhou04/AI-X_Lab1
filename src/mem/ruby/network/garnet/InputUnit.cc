@@ -92,12 +92,14 @@ InputUnit::wakeup()
 
             assert(virtualChannels[vc].get_state() == IDLE_);
             set_vc_active(vc, curTick());
-
+            int outport = m_router->route_compute(t_flit->get_route(),
+                m_id, m_direction);
+            /*
             int vnet = vc / m_vc_per_vnet;
             int vc_index = vc % m_vc_per_vnet;
             int outport = -1;
             auto route = t_flit->get_route();
-            
+
             if (vc_index == 0) {
                 // Escape VC: deterministic DOR
                 outport = m_router->route_compute_dor(route, m_id, m_direction);
@@ -105,7 +107,8 @@ InputUnit::wakeup()
                 // Adaptive VC
                 outport = m_router->route_compute_adaptive(route, m_id, m_direction);
             }
-            grant_outport(vc, outport);            
+                */
+            grant_outport(vc, outport);
 
         } else {
             assert(virtualChannels[vc].get_state() == ACTIVE_);

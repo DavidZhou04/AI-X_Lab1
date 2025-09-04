@@ -395,8 +395,8 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
     PortDirection outport_dirn = "Unknown";
 
     int dimX = m_router->get_net_ptr()->getNumRows();
-    int dimY = m_router->get_net_ptr()->getNumCols();
     int dimZ = m_router->get_net_ptr()->getDepth();
+    int dimY = m_router->get_net_ptr()->getNumRouters()/(dimX*dimZ);
 
     printf("(dimX,dimY,dimZ=%d,%d,%d)\n",dimX,dimY,dimZ);
     assert(dimX>0 && dimY>0 &&dimZ>0);
@@ -411,7 +411,8 @@ RoutingUnit::outportComputeTorusDor(RouteInfo route,
     int dest_y = (dest_id % (dimX * dimY)) % dimY;
     int dest_x = (dest_id % (dimX * dimY)) / dimY;
 
-    std::cout<<"my_id = "<<my_id<<" dest_id = "<<dest_id<<" ";
+    std::cout<<"my_id = "<<my_id<<" dest_id = "<<dest_id<<" \n";
+    printf("my_id = %d,%d,%d\n",my_x,my_y,my_z);
 
     int x_hops = (dest_x - my_x + dimX) % dimX;
     bool x_dirn = bool(x_hops <= dimX/2);
