@@ -312,14 +312,19 @@ RoutingUnit::outportComputeTorus(RouteInfo route,
     // This is preserved as XYZ ordering on normal torus
     // can serve as a baseline as deterministic routing algorithm
     // 当前节点、目标节点
+    int dimX = m_router->get_net_ptr()->getNumRows();
+    int dimZ = m_router->get_net_ptr()->getDepth();
+    int m_routers = m_router->get_net_ptr()->getNumRouters();
+    int dimY = m_routers / (dimX * dimZ);
+
+    m_dimX = dimX;
+    m_dimY = dimY;
+    m_dimZ = dimZ;
+
     Coord cur = idToCoord(m_router->get_id());
     Coord dst = idToCoord(route.dest_router);
 
-    int dimX = m_router->get_net_ptr()->getNumRows();
-    int dimY = m_router->get_net_ptr()->getNumCols();
-    int dimZ = m_router->get_net_ptr()->getDepth();
     assert(dimX > 0 && dimY > 0 && dimZ > 0);
-
     std::vector<int> candidate_ports;
 
     // X维度
